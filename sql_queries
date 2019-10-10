@@ -1,0 +1,28 @@
+CREATE TABLE `consumer` (
+`idConsumer` int(11) NOT NULL,
+`FirstName` varchar(20) NOT NULL,
+`LastName` varchar(20) NOT NULL,
+`EmailId` varchar(30) NOT NULL,
+`MobileNo` varchar(10) NOT NULL,
+`Password_Hash` varchar(255) NOT NULL,
+`City` varchar(20) NOT NULL,
+`VerifiedEmail` tinyint(4) NOT NULL DEFAULT '0',
+PRIMARY KEY (`idConsumer`),
+UNIQUE KEY `EmailId_UNIQUE` (`EmailId`),
+UNIQUE KEY `MobileNo_UNIQUE` (`MobileNo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+
+CREATE TABLE `farmer` (
+`idFarmer` int(11) NOT NULL,
+`FirstName` varchar(20) NOT NULL,
+`LastName` varchar(20) NOT NULL,
+`EmailId` varchar(30) NOT NULL,
+`MobileNo` varchar(10) NOT NULL,
+`Password_Hash` varchar(255) NOT NULL,
+`City` varchar(20) NOT NULL,
+`VerifiedEmail` tinyint(4) NOT NULL DEFAULT '0',
+PRIMARY KEY (`idFarmer`),
+UNIQUE KEY `EmailId_UNIQUE` (`EmailId`),
+UNIQUE KEY `MobileNo_UNIQUE` (`MobileNo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

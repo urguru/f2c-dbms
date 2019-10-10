@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',filename='css/switch.css') }}"
+    />
+    <title>Farmer Sign Up</title>
+  </head>
+
+  <body>
+    <div class="background-sign-in">
+      <div class="sign-in-box">
+        <div class="sign-in-image hello">
+          <img
+            src="{{url_for('static',filename='images/farmer.png')}}"
+            alt="Farmer Image"
+          />
+        </div>
+        <div class="sign-in-form">
+          <form action="" method="POST" id="farmer-register">
+            {{ form.hidden_tag() }}
+            <h1>Farmer Sign Up</h1>
+            <hr />
+            <!-- <input type="text" placeholder="First Name"> -->
+            {{form.firstname(placeholder='First Name')}}
+            {% for error in form.firstname.errors %}
+            <span> {{ error }}</span>
+            {% endfor %}
+
+            <!-- <input type="text" placeholder="Last Name" /> -->
+            {{ form.lastname(placeholder='Last Name')}}
+            {% for error in form.lastname.errors %}
+            <span> {{ error }}</span>
+            {% endfor %}
+            <!-- <input type="email" placeholder="Email-Id" /> -->
+            {{form.email(placeholder='Email-Id')}}
+            {% for error in form.email.errors %}
+            <span> {{ error }}</span>
+            {% endfor %}
+            <!-- <input type="text" placeholder="Mobile No" /> -->
+            {{ form.mobile(placeholder='Mobile No')}}
+            {% for error in form.mobile.errors %}
+            <span> {{ error }}</span>
+            {% endfor %}
+            <select name='cities' form="farmer-register">
+                {% for city in cities %}
+                <option value="{{city}}" SELECTED>{{city}}</option>"
+                {% endfor %}
+            </select> 
+            {{form.password(placeholder='Password')}}
+            {% for error in form.password.errors %}
+            <span> {{ error }}</span>
+            {% endfor %}
+            <!-- <input
+              type="password"
+              name=""
+              id=""
+              placeholder="Re enter the password"
+            /> -->
+            {{form.password2(placeholder='Re enter the password')}}
+            {% for error in form.password2.errors %}
+            <span> {{ error }}</span>
+            {% endfor %}
+            <!-- <input type="submit" value="Create Account" /> -->
+            {{form.submit(placeholder='Create Account')}}
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

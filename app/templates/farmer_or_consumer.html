@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/switch.css') }}" />
+    <title>Farmer or Consumer</title>
+</head>
+
+<body>
+    <form action="" method="POST">
+        {{form.hidden_tag()}}
+        <div class="background-sign-in">
+            <div class="sign-in-box choose-box">
+                <div class="farmer choose">
+                    Farmer
+                </div>
+                <div class="label choose turn">
+                    <label class="switch switch-v">
+                        <!-- <input type="checkbox" /> -->
+                        {{form.choice}}
+                        <span class="slider slider-v round"></span>
+                    </label>
+                </div>
+                <div class="consumer choose">
+                    Consumer
+                </div>
+                <!-- <input type="Submit" name="" id="" value="Select"> -->
+                {{form.submit(placeholder='Select')}}
+            </div>
+        </div>
+    </form>
+</body>
+
+</html>

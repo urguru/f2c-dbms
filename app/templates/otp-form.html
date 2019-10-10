@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',filename='css/switch.css') }}"
+    />
+    <title>OTP Verification</title>
+  </head>
+
+  <body>
+    <div class="background-sign-in">
+      <div class="sign-in-box">
+        <div class="sign-in-image hello">
+          <img
+            src="{{url_for('static',filename='images/farmer.png')}}"
+            alt="Consumer Image"
+          />
+        </div>
+        <div class="sign-in-form otp">
+          <form action="" method="POST">
+            {{ form.hidden_tag() }}
+            <h1>OTP Verification</h1>
+            <hr />
+            <h4>Hello Guruprasad</h4>
+            <h4>An OTP has been sent to</h4>
+            <h4>9964315577</h4>
+            <h4>Input the OTP Number</h4>
+            <div class="otp-field">
+              {{ form.a }}
+              {{ form.b }}
+              {{ form.c }}
+              {{ form.d }}
+              {{ form.e }}
+              {{ form.f }}
+            </div>
+            {% for error in form.a.errors %}
+            <span> {{ error }}</span>
+            {% endfor %} {% for error in form.b.errors %}
+            <span> {{ error }}</span>
+            {% endfor %} {% for error in form.c.errors %}
+            <span> {{ error }}</span>
+            {% endfor %} {% for error in form.d.errors %}
+            <span> {{ error }}</span>
+            {% endfor %} {% for error in form.e.errors %}
+            <span> {{ error }}</span>
+            {% endfor %} {% for error in form.f.errors %}
+            <span> {{ error }}</span>
+            {% endfor %}
+            <!-- <input type="submit" value="Verify" /> -->
+            {{form.submit(value='Verify')}}
+            <br />
+            <h4><a href="">Resend OTP</a></h4>
+            <br />
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
