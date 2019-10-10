@@ -1,5 +1,7 @@
 from flask_mail import Message
 from app import mail,app
+from flask import render_template
+from threading import Thread
 
 
 def send_async_email(app, msg):
@@ -12,3 +14,6 @@ def send_email(subject, sender, recipients, text_body, html_body):
     msg.body = text_body
     msg.html = html_body
     Thread(target=send_async_email, args=(app, msg)).start()
+
+def send_email_verify_OTP_message(otp,name,email):
+    send_email('[Farmer to Consumer]', sender=app.config['ADMINS'][0], recipients=[email], text_body=render_template('emails/otp_verification.txt',name=name, otp=otp), html_body=render_template('emails/otp_verification.html', otp=otp, name=name))

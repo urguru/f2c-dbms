@@ -1,111 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %} {% block content %}
+<div class="profile"></div>
+<div class="dashboard">
+  <div class="sidebar">
+    <h3><a href="">Edit Profile</a></h3>
+    <h3><a href="">Purchase Items</a></h3>
+    <h3><a href="">On-going Purchases</a></h3>
+    <h3><a href="">Past Purchases</a></h3>
+    <h3><a href="">Market Prices</a></h3>
+    <h3><a href="">Raise an Issue</a></h3>
+  </div>
+  <div class="mainbar">
+    <table>
+      <tr>
+        <th>No</th>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Price Mentioned</th>
+        <th>Price Quoted</th>
+        <th>Delivery Date</th>
+        <th>Farmer's Name</th>
+        <th>Farmer's Rating</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Capsicum</td>
+        <td>50 Kgs</td>
+        <td>Rs 3000</td>
+        <td>Rs 3200</td>
+        <td>5th Oct 2019</td>
+        <td>Ramesh</td>
+        <td>*****</td>
+        <td><button>Buy</button></td>
+        <td><Button>Reject</Button></td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Capsicum</td>
+        <td>50 Kgs</td>
+        <td>Rs 3000</td>
+        <td>Rs 3200</td>
+        <td>5th Oct 2019</td>
+        <td>Ramesh</td>
+        <td>*****</td>
+        <td><button>Buy</button></td>
+        <td><Button>Reject</Button></td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Capsicum</td>
+        <td>50 Kgs</td>
+        <td>Rs 3000</td>
+        <td>Rs 3200</td>
+        <td>5th Oct 2019</td>
+        <td>Ramesh</td>
+        <td>*****</td>
+        <td><button>Buy</button></td>
+        <td><Button>Reject</Button></td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Capsicum</td>
+        <td>50 Kgs</td>
+        <td>Rs 3000</td>
+        <td>Rs 3200</td>
+        <td>5th Oct 2019</td>
+        <td>Ramesh</td>
+        <td>*****</td>
+        <td><button>Buy</button></td>
+        <td><Button>Reject</Button></td>
+      </tr>
+    </table>
+  </div>
+</div>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/switch.css') }}" />
-    <title>Dashboard</title>
-</head>
-
-<body>
-    <div class="navbar">
-        <div class="title">
-            <a href="">
-                <img class="navbar-logo" src="./logo.png" alt="F2C Logo" />
-                <p>F2C.com</p>
-            </a>
-        </div>
-        <div class="nav-items">
-            <ul>
-                <li><a href="./index.html">Home</a></li>
-                <li><a href="">Dashboard</a></li>
-                <li><a href="">Products</a></li>
-                <li><a href="">About Us</a></li>
-                <li><a href="">Contact Us</a></li>
-                <li><a href="{{url_for('login')}}">Login</a></li>
-                <li><a href="{{url_for('register')}}">Register</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="profile">
-
-    </div>
-    <div class="dashboard">
-
-        <div class="sidebar">
-            <h3><a href="">Edit Profile</a></h3>
-            <h3><a href="">Purchase Items</a></h3>
-            <h3><a href="">On-going Purchases</a></h3>
-            <h3><a href="">Past Purchases</a></h3>
-            <h3><a href="">Market Prices</a></h3>
-            <h3><a href="">Raise an Issue</a></h3>
-        </div>
-        <div class="mainbar">
-            <table>
-                <tr>
-                    <th>No</th>
-                    <th>Item</th>
-                    <th>Quantity</th>
-                    <th>Price Mentioned</th>
-                    <th>Price Quoted</th>
-                    <th>Delivery Date</th>
-                    <th>Farmer's Name</th>
-                    <th>Farmer's Rating</th>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Capsicum</td>
-                    <td>50 Kgs</td>
-                    <td>Rs 3000</td>
-                    <td>Rs 3200</td>
-                    <td>5th Oct 2019</td>
-                    <td>Ramesh</td>
-                    <td>*****</td>
-                    <td><button>Buy</button></td>
-                    <td><Button>Reject</Button></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Capsicum</td>
-                    <td>50 Kgs</td>
-                    <td>Rs 3000</td>
-                    <td>Rs 3200</td>
-                    <td>5th Oct 2019</td>
-                    <td>Ramesh</td>
-                    <td>*****</td>
-                    <td><button>Buy</button></td>
-                    <td><Button>Reject</Button></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Capsicum</td>
-                    <td>50 Kgs</td>
-                    <td>Rs 3000</td>
-                    <td>Rs 3200</td>
-                    <td>5th Oct 2019</td>
-                    <td>Ramesh</td>
-                    <td>*****</td>
-                    <td><button>Buy</button></td>
-                    <td><Button>Reject</Button></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Capsicum</td>
-                    <td>50 Kgs</td>
-                    <td>Rs 3000</td>
-                    <td>Rs 3200</td>
-                    <td>5th Oct 2019</td>
-                    <td>Ramesh</td>
-                    <td>*****</td>
-                    <td><button>Buy</button></td>
-                    <td><Button>Reject</Button></td>
-                </tr>
-            </table>
-        </div>
-    </div>
-</body>
-
-</html>
+{% endblock %}

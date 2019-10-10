@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>F2C Farmer To Consumer</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',filename='css/style.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="title">
+        <a href="">
+          <img
+            class="navbar-logo"
+            src="{{ url_for('static',filename='images/logo.png') }}"
+            alt="F2C Logo"
+          />
+          <p>F2C.com</p>
+        </a>
+      </div>
+      <div class="nav-items">
+        <ul>
+          <li><a href="{{url_for('index')}}">Home</a></li>
+          <li><a href="{{ url_for('dashboard') }}">{%if name%}{{name}}{%else%}{{User}}{% endif %}'s Dashboard</a></li>
+          <li><a href="">Products</a></li>
+          <li><a href="">About Us</a></li>
+          <li><a href="">Contact Us</a></li>
+          {% if login==False %}
+          <li><a href="{{ url_for('login') }}">Login</a></li>
+          <li><a href="{{ url_for('register') }}">Register</a></li>
+          {% else %}
+          <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    {% block content %} {% endblock %}
+  </body>
+</html>

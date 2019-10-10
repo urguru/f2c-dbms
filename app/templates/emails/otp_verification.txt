@@ -1,0 +1,13 @@
+Dear {{ name }}
+
+
+The OTP for your email verification is given below
+
+Kindly do not share it with anyone
+
+OTP - {{otp}}
+
+The OTP will be valid only for 5 minutes
+
+Regards
+Farmer 2 Consumer Team
