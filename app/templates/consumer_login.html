@@ -18,6 +18,15 @@
             </div>
             <div class="sign-in-form">
                 <form action="" method="POST">
+                    {% with messages=get_flashed_messages() %} {% if messages %}
+                        <ul>
+                            {% for message in messages %}
+                            <li style="list-style-type: none;">
+                                {{ message }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %} {% endwith %}
                     <h1>Consumer Login</h1>
                     <hr />
                     {{ form.hidden_tag() }}
@@ -39,7 +48,7 @@
                     <!-- <input type="submit" value="Log In" /> -->
                     {{form.submit(placeholder='Log In')}}
                     <br />
-                    <h4><a href="">Damn!!! Forgot Password</a></h4>
+                    <h4><a href="{{url_for('reset_password_request')}}">Damn!!! Forgot Password</a></h4>
                     <br />
                     <h4><a href="{{url_for('consumer_register')}}">New User!!! Sign Up</a></h4>
                 </form>

@@ -1,10 +1,11 @@
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for, session, flash
 from app import app, mysql
-from app.forms import FarmerRegistrationForm, FarmerLoginForm, FarmerOrConsumer, ConsumerLoginForm, ConsumerRegistrationForm, OTPForm,ResetPasswordRequestForm
+from app.forms import FarmerRegistrationForm, FarmerLoginForm, FarmerOrConsumer, ConsumerLoginForm, ConsumerRegistrationForm, OTPForm, ResetPasswordRequestForm, ResetPasswordForm
 from app.cities import cities
 from app.password_check import set_password
-from app.email import send_email_verify_OTP_message
+from app.email import send_email_verify_OTP_message, send_password_reset_email
 from random import randint
+import jwt
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -73,7 +74,7 @@ def consumer_register():
         password_hash = set_password(form.password.data)
         OTP = generate_otp()
         session['id'] = idConsumer
-        session['consumer']=True
+        session['consumer'] = True
         curr = mysql.connection.cursor()
         query = ''' INSERT INTO CONSUMER (idconsumer,firstname,lastname,emailid,mobileno,password_hash,city,verifiedemail,OTP) VALUES('{}','{}','{}','{}','{}','{}','{}',0,{})'''.format(
             idConsumer, firstname, lastname, email, mobile, password_hash, city, OTP)
@@ -82,7 +83,7 @@ def consumer_register():
         mysql.connection.commit()
         curr.close()
         print(idConsumer)
-        return redirect(url_for('otp_form',id=idConsumer))
+        return redirect(url_for('otp_form', id=idConsumer))
     return render_template('consumer_register.html', form=form, cities=sorted(cities))
 
 
@@ -139,16 +140,17 @@ def dashboard():
                 id)
             curr.execute(query)
             data = curr.fetchall()
-            if int(data[0][1])==0:
-                return redirect(url_for('otp_form',id=session['id']))
+            if int(data[0][1]) == 0:
+                return redirect(url_for('otp_form', id=session['id']))
             if data[0][0]:
                 name = data[0][0]
         else:
-            query = ''' SELECT firstname,verifiedemail FROM farmer WHERE idfarmer={} '''.format(id)
+            query = ''' SELECT firstname,verifiedemail FROM farmer WHERE idfarmer={} '''.format(
+                id)
             curr.execute(query)
             data = curr.fetchall()
-            if int(data[0][1])==0:
-                return redirect(url_for('otp_form',id=session[id]))
+            if int(data[0][1]) == 0:
+                return redirect(url_for('otp_form', id=session[id]))
             if data[0][0]:
                 name = data[0][0]
     return render_template('dashboard.html', login=session['login'], name=name)
@@ -161,8 +163,10 @@ def login():
     form = FarmerOrConsumer()
     if form.validate_on_submit():
         if form.choice.data == True:
+            session['consumer'] = True
             return redirect(url_for('consumer_login'))
         else:
+            session['consumer'] = False
             return redirect(url_for('farmer_login'))
     return render_template('farmer_or_consumer.html', form=form)
 
@@ -184,10 +188,9 @@ def register():
 
 @app.route('/otp_form/<id>', methods=['GET', 'POST'])
 def otp_form(id):
-    name=''
-    email=''
+    name = ''
+    email = ''
     curr = mysql.connection.cursor()
-    print(session['consumer'],'Session')
     if session['consumer']:
         query = ''' SELECT firstname,otp,emailid FROM consumer WHERE idconsumer='{}' '''.format(
             id)
@@ -217,6 +220,7 @@ def otp_form(id):
             mysql.connection.commit()
             curr.close()
             session['id'] = None
+            flash("You are successfully registered as a consumer now.You can login with your credentials")
             return redirect(url_for('consumer_login'))
         else:
             curr = mysql.connection.cursor()
@@ -226,15 +230,16 @@ def otp_form(id):
             mysql.connection.commit()
             curr.close()
             session['id'] = None
+            flash("You are successfully registered as a farmer now.You can login with your credentials")
             return redirect(url_for('farmer_login'))
-    return render_template('otp-form.html', form=form,name=name,email=email)
+    return render_template('otp-form.html', form=form, name=name, email=email)
 
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session['login'] = False
     session['id'] = None
-    print('Hello World')
+    flash('Successfully Logged Out of Your Account')
     return redirect(url_for('index'))
 
 
@@ -244,8 +249,73 @@ def reset_password_request():
         return redirect(url_for('index'))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
-        email=form.email.data
+        email = form.email.data
+        curr = mysql.connection.cursor()
+        if session['consumer']:
+            query = '''SELECT idconsumer,firstname FROM consumer WHERE EMAILID='{}' '''.format(
+                email)
+            curr.execute(query)
+            data = curr.fetchall()
+            if data:
+                id = data[0][0]
+                name = data[0][1]
+                send_password_reset_email(id, email, name)
+                return redirect(url_for('consumer_login'))
+        else:
+            query = '''SELECT idfarmer,firstname FROM farmer WHERE EMAILID='{}' '''.format(
+                email)
+            curr.execute(query)
+            data = curr.fetchall()
+            if data:
+                id = data[0][0]
+                name = data[0][1]
+                send_password_reset_email(id, email, name)
+                return redirect(url_for('farmer_login'))
+        flash("Check your email for the further instructions")
     return render_template('reset_password_request.html', form=form)
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if session['login']:
+        return redirect(url_for('index'))
+    try:
+        id = jwt.decode(token, app.config['SECRET_KEY'], algorithm='HS256')[
+            'reset_password']
+    except:
+        print('')
+    curr = mysql.connection.cursor()
+    query = ''' SELECT firstname FROM farmer WHERE idfarmer={} '''.format(id)
+    curr.execute(query)
+    data = curr.fetchall()
+    if not data:
+        session['consumer'] = True
+        query = ''' SELECT firstname FROM consumer WHERE idconsumer={} '''.format(
+            id)
+        curr.execute(query)
+        data = curr.fetchall()
+        if not data:
+            return redirect(url_for(index))
+        name = data[0][0]
+    name = data[0][0]
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        password = form.password.data
+        password_hash = set_password(password)
+        if session['consumer']:
+            query = '''UPDATE consumer SET password_hash='{}' WHERE idconsumer={} '''.format(
+                password_hash, id)
+            curr.execute(query)
+            mysql.connection.commit()
+        else:
+            query = '''UPDATE farmer SET password_hash='{}' WHERE idfarmer={} '''.format(
+                password_hash, id)
+            curr.execute(query)
+            mysql.connection.commit()
+        return redirect(url_for('login'))
+        flash("Your password has been reset successfully")
+    return render_template('reset_password.html', name=name, form=form)
+
 
 def generate_farmer_id():
     curr = mysql.connection.cursor()

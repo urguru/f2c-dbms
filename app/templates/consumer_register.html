@@ -17,6 +17,15 @@
                 <img src="{{url_for('static',filename='images/consumer.jpg')}}" alt="Farmer Image" />
             </div>
             <div class="sign-in-form">
+                {% with messages=get_flashed_messages() %} {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                        <li style="list-style-type: none;">
+                            {{ message }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %} {% endwith %}
                 <form action="" method="POST" id="consumer-register">
                     {{ form.hidden_tag() }}
                     <h1>Consumer Sign Up</h1>
