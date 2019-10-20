@@ -6,6 +6,8 @@ from app.password_check import set_password
 from app.email import send_email_verify_OTP_message, send_password_reset_email
 from random import randint
 import jwt
+from werkzeug.utils import secure_filename
+import os
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -132,28 +134,39 @@ def dashboard():
     id = session.get('id', None)
     type = session.get('consumer', None)
     name = 'User'
-
+    word=""
     if id:
         curr = mysql.connection.cursor()
         if type:
-            query = ''' SELECT firstname,verifiedemail FROM consumer WHERE idConsumer={} '''.format(
-                id)
+            query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM consumer WHERE idConsumer={} '''.format(id)
             curr.execute(query)
             data = curr.fetchall()
             if int(data[0][1]) == 0:
                 return redirect(url_for('otp_form', id=session['id']))
             if data[0][0]:
-                name = data[0][0]
+                name = data[0][0]+" "+data[0][2]
+                email=data[0][3]
+                mobileno=data[0][4]
+                city=data[0][5]
+                profile_url=data[0][6]
         else:
-            query = ''' SELECT firstname,verifiedemail FROM farmer WHERE idfarmer={} '''.format(
+            query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM farmer WHERE idfarmer={} '''.format(
                 id)
             curr.execute(query)
             data = curr.fetchall()
             if int(data[0][1]) == 0:
                 return redirect(url_for('otp_form', id=session[id]))
             if data[0][0]:
-                name = data[0][0]
-    return render_template('dashboard.html', login=session['login'], name=name)
+                name = data[0][0]+" "+data[0][2]
+                email = data[0][3]
+                mobileno = data[0][4]
+                city = data[0][5]
+                profile_url = data[0][6]
+        if session['consumer']:
+            word="Consumer"
+        else:
+            word="Farmer"
+    return render_template('dashboard.html', login=session['login'], name=name,email=email,mobileno=mobileno,city=city,profile_url=profile_url,cus_type=word)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -220,7 +233,8 @@ def otp_form(id):
             mysql.connection.commit()
             curr.close()
             session['id'] = None
-            flash("You are successfully registered as a consumer now.You can login with your credentials")
+            flash(
+                "You are successfully registered as a consumer now.You can login with your credentials")
             return redirect(url_for('consumer_login'))
         else:
             curr = mysql.connection.cursor()
@@ -230,7 +244,8 @@ def otp_form(id):
             mysql.connection.commit()
             curr.close()
             session['id'] = None
-            flash("You are successfully registered as a farmer now.You can login with your credentials")
+            flash(
+                "You are successfully registered as a farmer now.You can login with your credentials")
             return redirect(url_for('farmer_login'))
     return render_template('otp-form.html', form=form, name=name, email=email)
 
@@ -315,6 +330,29 @@ def reset_password(token):
         return redirect(url_for('login'))
         flash("Your password has been reset successfully")
     return render_template('reset_password.html', name=name, form=form)
+
+
+# Profile Pic Upload
+@app.route('/upload_pp', methods=['POST', 'GET'])
+def upload_pp():
+    print("Hello World")
+    if request.method == 'POST':
+        file=request.files['img-file']
+        if file.filename=='':
+            return
+        filename=secure_filename(file.filename).split('.')
+        filename = '{}_pp.{}'.format(session['id'],filename[-1])
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        curr=mysql.connection.cursor()
+        if session['consumer']:
+            query='''UPDATE consumer SET profile_pic='{}' WHERE idconsumer={}'''.format(filename,session['id'])
+            curr.execute(query)
+            mysql.connection.commit()
+        else:
+            query = '''UPDATE farmer SET profile_pic='{}' WHERE idfarmer={}'''.format(filename, session['id'])
+            curr.execute(query)
+            mysql.connection.commit()
+        return redirect(url_for('dashboard'))
 
 
 def generate_farmer_id():

@@ -40,8 +40,7 @@ option {
   flex-direction: column;
   align-items: center;
 }
-input,
-select {
+input,select,button {
   display: block;
   border: none;
   border-radius: 20px;
@@ -56,12 +55,12 @@ input:focus {
   border: 2px solid black;
 }
 
-input[type="submit"] {
+input[type="submit"],button{
   text-align: center;
   text-indent: 0;
   font-weight: bold;
 }
-input[type="submit"]:hover {
+input[type="submit"]:hover,button:hover {
   background-color: rgb(124, 161, 200);
 }
 form hr {
@@ -154,6 +153,9 @@ input[type="checkbox"] {
   height: 25vh;
   background-color: rgb(61, 60, 59);
   border-bottom: 2px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
 }
 /* Dashboard */
 .dashboard {
@@ -217,6 +219,23 @@ table tr td {
 }
 .otp form h4 {
   text-align: center;
+}
+
+.profile-pic{
+
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.profile-pic img{
+  border: 2px solid white;
+  display: block;
+  border-radius: 50%;
+}
+.invisible{
+  display: none;
 }
 
 @media screen and (min-width: 676px) {

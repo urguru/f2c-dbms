@@ -1,5 +1,31 @@
 {% extends 'base.html' %} {% block content %}
-<div class="profile"></div>
+<div class="profile">
+  <div class="profile-pic" style="min-width: 100px;min-height:200px;">
+    {% set url='/static/images/'+profile_url %}
+    <img src="{{url}}" alt="Profile Pic" width="100px" />
+    <button id="upload-img-btn" onclick="show_upload()" style="height: 20px; width:200px;">
+      Change Profile Pic
+    </button>
+    <form action="{{url_for('upload_pp')}}" enctype="multipart/form-data" method="POST">
+      <input type="file" name="img-file" id="img-file" class="invisible"  style="height: 20px;margin:5px auto"/>
+      <input type="submit" value="Upload" class="invisible" id="img-submit" style="height: 20px; margin:5px auto"/>
+    </form>
+  </div>
+  <div>
+    <h3>Name : {{name}}</h3>
+    <h3>User Type : {{cus_type}}</h3>
+    <h3>Location : {{city}}</h3>
+    <h3>Email ID : {{email}}</h3>
+    <h3>Mobile No : {{mobileno}}</h3>
+  </div>
+  <div>
+    <h3>Revenue earned : Rs 8000</h3>
+    <h3>Tenders available : 255</h3>
+    <h3>Tenders Completed : 17</h3>
+    <h3>Tenders Applied For : 5</h3>
+    <h3>Ratings : ****(of 5)</h3>
+  </div>
+</div>
 <div class="dashboard">
   <div class="sidebar">
     <h3><a href="">Edit Profile</a></h3>
@@ -81,5 +107,12 @@
     </table>
   </div>
 </div>
+<script>
+  function show_upload() {
+    document.querySelector("#img-file").classList.remove("invisible");
+    document.querySelector("#upload-img-btn").classList.add("invisible");
+    document.querySelector("#img-submit").classList.remove("invisible");
+  }
+</script>
 
 {% endblock %}
