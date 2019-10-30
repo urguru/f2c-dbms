@@ -2,21 +2,41 @@
 <div class="profile">
   <div class="profile-pic" style="min-width: 100px;min-height:200px;">
     {% set url='/static/images/'+profile_url %}
-    <img src="{{url}}" alt="Profile Pic" width="100px" />
-    <button id="upload-img-btn" onclick="show_upload()" style="height: 20px; width:200px;">
+    <img src="{{ url }}" alt="Profile Pic" width="100px" />
+    <button
+      id="upload-img-btn"
+      onclick="show_upload()"
+      style="height: 20px; width:200px;"
+    >
       Change Profile Pic
     </button>
-    <form action="{{url_for('upload_pp')}}" enctype="multipart/form-data" method="POST">
-      <input type="file" name="img-file" id="img-file" class="invisible"  style="height: 20px;margin:5px auto"/>
-      <input type="submit" value="Upload" class="invisible" id="img-submit" style="height: 20px; margin:5px auto"/>
+    <form
+      action="{{ url_for('upload_pp') }}"
+      enctype="multipart/form-data"
+      method="POST"
+    >
+      <input
+        type="file"
+        name="img-file"
+        id="img-file"
+        class="invisible"
+        style="height: 20px;margin:5px auto"
+      />
+      <input
+        type="submit"
+        value="Upload"
+        class="invisible"
+        id="img-submit"
+        style="height: 20px; margin:5px auto"
+      />
     </form>
   </div>
   <div>
-    <h3>Name : {{name}}</h3>
-    <h3>User Type : {{cus_type}}</h3>
-    <h3>Location : {{city}}</h3>
-    <h3>Email ID : {{email}}</h3>
-    <h3>Mobile No : {{mobileno}}</h3>
+    <h3>Name : {{ name }}</h3>
+    <h3>User Type : {{ cus_type }}</h3>
+    <h3>Location : {{ city }}</h3>
+    <h3>Email ID : {{ email }}</h3>
+    <h3>Mobile No : {{ mobileno }}</h3>
   </div>
   <div>
     <h3>Revenue earned : Rs 8000</h3>
@@ -29,10 +49,18 @@
 <div class="dashboard">
   <div class="sidebar">
     <h3><a href="">Edit Profile</a></h3>
-    <h3><a href="">Purchase Items</a></h3>
-    <h3><a href="">On-going Purchases</a></h3>
+    {% if cus_type=="Farmer" %}
+    <h3><a href="{{ url_for('browse_orders') }}">Browse Orders</a></h3>
+    <h3><a href="{{ url_for('accepted_orders') }}">Accepted Orders</a></h3>
+    <h3><a href="">Past Orders</a></h3>
+    {% else %}
+    <h3><a href="{{ url_for('purchase_items') }}">Purchase Items</a></h3>
+    <h3><a href="{{ url_for('ongoing_purchases') }}">On-going Purchases</a></h3>
+    <h3><a href="{{url_for('finalize_purchases')}}">Finalize purchases</a></h3>
     <h3><a href="">Past Purchases</a></h3>
+    {% endif %}
     <h3><a href="">Market Prices</a></h3>
+    <h3><a href="">Notifications</a></h3>
     <h3><a href="">Raise an Issue</a></h3>
   </div>
   <div class="mainbar">
@@ -40,79 +68,26 @@
     <ul>
       {% for message in messages %}
       <li style="list-style-type: none;">
-        {{ message }}
+        <h3>{{ message }}</h3>
       </li>
       {% endfor %}
     </ul>
-    {% endif %} {% endwith %}
-    <table>
-      <tr>
-        <th>No</th>
-        <th>Item</th>
-        <th>Quantity</th>
-        <th>Price Mentioned</th>
-        <th>Price Quoted</th>
-        <th>Delivery Date</th>
-        <th>Farmer's Name</th>
-        <th>Farmer's Rating</th>
-      </tr>
-      <tr>
-        <td>1</td>
-        <td>Capsicum</td>
-        <td>50 Kgs</td>
-        <td>Rs 3000</td>
-        <td>Rs 3200</td>
-        <td>5th Oct 2019</td>
-        <td>Ramesh</td>
-        <td>*****</td>
-        <td><button>Buy</button></td>
-        <td><Button>Reject</Button></td>
-      </tr>
-      <tr>
-        <td>1</td>
-        <td>Capsicum</td>
-        <td>50 Kgs</td>
-        <td>Rs 3000</td>
-        <td>Rs 3200</td>
-        <td>5th Oct 2019</td>
-        <td>Ramesh</td>
-        <td>*****</td>
-        <td><button>Buy</button></td>
-        <td><Button>Reject</Button></td>
-      </tr>
-      <tr>
-        <td>1</td>
-        <td>Capsicum</td>
-        <td>50 Kgs</td>
-        <td>Rs 3000</td>
-        <td>Rs 3200</td>
-        <td>5th Oct 2019</td>
-        <td>Ramesh</td>
-        <td>*****</td>
-        <td><button>Buy</button></td>
-        <td><Button>Reject</Button></td>
-      </tr>
-      <tr>
-        <td>1</td>
-        <td>Capsicum</td>
-        <td>50 Kgs</td>
-        <td>Rs 3000</td>
-        <td>Rs 3200</td>
-        <td>5th Oct 2019</td>
-        <td>Ramesh</td>
-        <td>*****</td>
-        <td><button>Buy</button></td>
-        <td><Button>Reject</Button></td>
-      </tr>
-    </table>
+    {% endif %} {% endwith %} {% block mainbar %}{% endblock %}
   </div>
-</div>
-<script>
-  function show_upload() {
-    document.querySelector("#img-file").classList.remove("invisible");
-    document.querySelector("#upload-img-btn").classList.add("invisible");
-    document.querySelector("#img-submit").classList.remove("invisible");
-  }
-</script>
+  <script>
+    function show_upload() {
+      document.querySelector("#img-file").classList.remove("invisible");
+      document.querySelector("#upload-img-btn").classList.add("invisible");
+      document.querySelector("#img-submit").classList.remove("invisible");
+    }
+    $(function() {
+      $("#datepicker").datepicker({
+        dateFormat: "yy-mm-dd",
+        minDate: 0,
+        maxDate: "+15D"
+      });
+    });
+  </script>
 
-{% endblock %}
+  {% endblock %}
+</div>

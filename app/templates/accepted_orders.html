@@ -1,0 +1,27 @@
+{% extends 'dashboard.html' %} {% block mainbar %}
+<div class="accepted_orders">
+  {% if accepts|length < 1 %}
+  <h3 center>
+    Sorry there are no accepted orders from consumers for you to display :(
+  </h3>
+  <h3>Keep bidding for more orders being accepted!!!</h3>
+  {% else %} {% for order in accepts %}
+  <div class="accept-card">
+    <div class="text">
+      We are glad to inform you that <b>{{ order[0] }}</b> has accepted your
+      order for bidding amount of <b>Rs {{ order[1] }} </b>for
+      <b>{{ order[2] }} kgs</b> of <b>{{ order[3] }}</b> which should be
+      delivered by <b>{{ order[4] }}</b>
+    </div>
+    <div>
+      <form action="" method="POST" class="btns">
+        <button>Chat with {{ order[0] }}</button>
+        {{ form.hidden_tag() }}
+        {{form.bid_id(value=order[5],class="invisible")}}
+        {% if order[6]!=1 %} {{ form.submit() }}{% endif %}
+      </form>
+    </div>
+  </div>
+  {% endfor %} {% endif %}
+</div>
+{% endblock %}

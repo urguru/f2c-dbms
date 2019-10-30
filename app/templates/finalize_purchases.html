@@ -1,0 +1,20 @@
+{% extends 'dashboard.html' %} {% block mainbar %}
+<div class="finalize-purchase">
+  {% if orders|length < 1 %}
+  <h3>No orders to finalize from!!!</h3>
+  <h3>We will notify you when you get one :)</h3>
+  {% else %} {% for item in orders %}
+  <div class="finalize-card">
+    <div class="text">
+      Finalize your order from {{ item[0] }} for {{ item[1] }} kgs of
+      {{ item[2] }} for Rs {{ item[3] }} <br>
+      The date mentioned being {{item[4]}}
+    </div>
+    <div class="btns">
+      <button>Chat with {{ item[0] }}</button>
+     {% if item[5]!=0 %} <button>Order Received</button> {% endif %}
+    </div>
+  </div>
+  {% endfor %} {% endif %}
+</div>
+{% endblock %}

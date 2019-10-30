@@ -26,3 +26,12 @@ PRIMARY KEY (`idFarmer`),
 UNIQUE KEY `EmailId_UNIQUE` (`EmailId`),
 UNIQUE KEY `MobileNo_UNIQUE` (`MobileNo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+
+
+CREATE DEFINER = CURRENT_USER TRIGGER `f2c`.`acc_req_AFTER_INSERT` AFTER INSERT ON `acc_req` FOR EACH ROW
+BEGIN
+    DELETE FROM f_bid 
+    WHERE NEW.bid_id!=f_bid.bid_id AND 
+    r_id IN (select r_id FROM f_bid WHERE r_id!=(select r_id from f_bid where  NEW.bid_id=f_bid.bid_id));
+END

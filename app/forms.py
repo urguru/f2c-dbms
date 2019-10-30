@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField, DateField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Length, Regexp
 from app import mysql
 from app.cities import cities
@@ -126,17 +126,20 @@ class OTPForm(FlaskForm):
     submit = SubmitField()
 
     def validate_a(self, a):
-        input_otp = int(a.data)*100000+int(self.b.data)*10000+int(self.c.data) * 1000+int(self.d.data)*100+int(self.e.data)*10+int(self.f.data)*1
+        input_otp = int(a.data)*100000+int(self.b.data)*10000+int(self.c.data) * \
+            1000+int(self.d.data)*100+int(self.e.data)*10+int(self.f.data)*1
         if session['consumer']:
             curr = mysql.connection.cursor()
-            query = ''' SELECT OTP FROM consumer WHERE idconsumer = {} '''.format(session['id'])
+            query = ''' SELECT OTP FROM consumer WHERE idconsumer = {} '''.format(
+                session['id'])
             curr.execute(query)
             data = curr.fetchall()
             if int(data[0][0]) != input_otp:
                 raise ValidationError('Invalid OTP Number')
         else:
             curr = mysql.connection.cursor()
-            query = ''' SELECT OTP FROM farmer WHERE idfarmer = {} '''.format(session['id'])
+            query = ''' SELECT OTP FROM farmer WHERE idfarmer = {} '''.format(
+                session['id'])
             curr.execute(query)
             data = curr.fetchall()
             if int(data[0][0]) != input_otp:
@@ -144,10 +147,32 @@ class OTPForm(FlaskForm):
 
 
 class ResetPasswordRequestForm(FlaskForm):
-    email=StringField('email',validators=[DataRequired(),Email()])
-    submit=SubmitField('Request Password Reset')
+    email = StringField('email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
 
 class ResetPasswordForm(FlaskForm):
-    password=PasswordField('New Password',validators=[DataRequired()])
-    password2=PasswordField('Reenter the new password',validators=[EqualTo('password')])
-    submit=SubmitField('Request Password Reset')
+    password = PasswordField('New Password', validators=[DataRequired()])
+    password2 = PasswordField(
+        'Reenter the new password', validators=[EqualTo('password')])
+    submit = SubmitField('Request Password Reset')
+
+
+class PurchaseItem(FlaskForm):
+    quantity = StringField('Quantity', validators=[DataRequired()])
+    submit = SubmitField("Place an order")
+
+
+class BrowseItems(FlaskForm):
+    r_id=StringField('r_id')
+    price = StringField('Bid Price', validators=[DataRequired()])
+    submit = SubmitField('Bid for the order')
+
+
+class OngoingPurchases(FlaskForm):
+    bid_id = StringField('bid_id')
+    submit = SubmitField('Bid for the order')
+
+class SendItem(FlaskForm):
+    bid_id=StringField('bid_id')
+    submit=SubmitField('Send The Items')

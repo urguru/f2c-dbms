@@ -1,0 +1,34 @@
+{% extends 'dashboard.html' %} {% block mainbar %}
+<div class="main-bar-content-browse">
+  {% if orders|length < 1 %}
+  <h3>There are currently no orders to display</h3>
+  {% else %} {% for order in orders %}
+  <div class="browse-card">
+    <div class="browse-card-text">
+      <h4>{{ order[5] }} Kgs of {{ order[0] }} needed</h4>
+      <h5>Consumer Name : {{ order[2] }}</h5>
+      <h5>Location : {{ order[3] }}</h5>
+      <h5>Minimum Bidding Price : Rs{{ order[7] }}</h5>
+      <h5>Date needed : {{ order[6] }}</h5>
+    </div>
+    <div class="browse-card-button">
+      <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <!-- <input
+          type="number"
+          name="r_id"
+          id="r_id"
+          value="{{ order[4] }}"
+          class="invisible"
+        /> -->
+        {{form.r_id(class="invisible",value=order[4])}}
+        <!-- <input type="number" name="amount" id="amount" placeholder="Your Amount" /> -->
+        {{form.price(type="number",placeholder="Your Amount")}}
+        <!-- <input type="Submit" name="bid" id="bid" value="Bid for the order" /> -->
+        {{form.submit(value="Bid for the order")}}
+      </form>
+    </div>
+  </div>
+  {% endfor %} {% endif %}
+</div>
+{% endblock %}

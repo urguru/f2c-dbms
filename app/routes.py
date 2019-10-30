@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from app import app, mysql
-from app.forms import FarmerRegistrationForm, FarmerLoginForm, FarmerOrConsumer, ConsumerLoginForm, ConsumerRegistrationForm, OTPForm, ResetPasswordRequestForm, ResetPasswordForm
+from app.forms import FarmerRegistrationForm, FarmerLoginForm, FarmerOrConsumer, ConsumerLoginForm, ConsumerRegistrationForm, OTPForm, ResetPasswordRequestForm, ResetPasswordForm,PurchaseItem,BrowseItems,OngoingPurchases,SendItem
 from app.cities import cities
 from app.password_check import set_password
 from app.email import send_email_verify_OTP_message, send_password_reset_email
@@ -134,7 +134,11 @@ def dashboard():
     id = session.get('id', None)
     type = session.get('consumer', None)
     name = 'User'
+    email=''
+    mobileno=''
     word=""
+    city=''
+    profile_url=''
     if id:
         curr = mysql.connection.cursor()
         if type:
@@ -155,7 +159,7 @@ def dashboard():
             curr.execute(query)
             data = curr.fetchall()
             if int(data[0][1]) == 0:
-                return redirect(url_for('otp_form', id=session[id]))
+                return redirect(url_for('otp_form', id=session['id']))
             if data[0][0]:
                 name = data[0][0]+" "+data[0][2]
                 email = data[0][3]
@@ -355,6 +359,270 @@ def upload_pp():
         return redirect(url_for('dashboard'))
 
 
+@app.route('/purchase_items',methods=['POST','GET'])
+def purchase_items():
+    if not session['login']:
+        return redirect(url_for('login'))
+    if not ['consumer']:
+        flash("Farmers cannot purchase items")
+        return redirect(url_for('index'))
+    id = session.get('id', None)
+    form=PurchaseItem()
+    if form.validate_on_submit():
+        qty=form.quantity.data
+        item=request.form['item']
+        date=request.form['date']
+        flash("Successfully placed an order for {} kgs of {} by {}".format(qty,item,date))
+        curr=mysql.connection.cursor()
+        query=''' call get_item_id('{}') '''.format(item)
+        curr.execute(query)
+        data=curr.fetchall()
+        item_id=data[0][0]
+        query=''' INSERT INTO c_req(c_id,i_id,qty,date) values({},{},{},'{}') '''.format(id,item_id,qty,date)
+        curr.execute(query)
+        mysql.connection.commit()
+        return redirect(url_for('dashboard'))
+    curr=mysql.connection.cursor()
+    query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM consumer WHERE idConsumer={} '''.format(id)
+    curr.execute(query)
+    data = curr.fetchall()
+    if int(data[0][1]) == 0:
+        return redirect(url_for('otp_form', id=session['id']))
+    name=""
+    email=""
+    mobileno=""
+    city=""
+    profile_url=""
+    if data[0][0]:
+        name = data[0][0]+" "+data[0][2]
+        email = data[0][3]
+        mobileno = data[0][4]
+        city = data[0][5]
+        profile_url = data[0][6]
+    query=''' CALL get_items() '''
+    curr.execute(query)
+    data = curr.fetchall()
+    items=[]
+    for row in data:
+        for column in row:
+            items.append(column)
+    return render_template('purchase_items.html', login=session['login'],form=form, name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url,cus_type="Consumer",items=items)
+
+@app.route('/browse_orders',methods=['POST','GET'])
+def browse_orders():
+    if not session['login']:
+        return redirect(url_for('login'))
+    if session['consumer']:
+        flash("Consumers cannot browse Orders")
+        return redirect(url_for('index'))
+    id = session.get('id', None)
+    curr = mysql.connection.cursor()
+    form=BrowseItems()
+    if form.validate_on_submit():
+        bid_price=form.price.data
+        r_id=request.form['r_id']
+        query='''INSERT into f_bid(f_id,r_id,cost_bid) VALUES({},{},{}) '''.format(id,r_id,bid_price)
+        curr.execute(query)
+        mysql.connection.commit()
+        flash("The consumer has been informed about your bidding.Stay tuned!!!")
+        return redirect(url_for('dashboard'))
+    query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM farmer WHERE idFarmer={} '''.format(id)
+    curr.execute(query)
+    data = curr.fetchall()
+    if int(data[0][1]) == 0:
+        return redirect(url_for('otp_form', id=session['id']))
+    name = ""
+    email = ""
+    mobileno = ""
+    city = ""
+    profile_url = ""
+    if data[0][0]:
+        name = data[0][0]+" "+data[0][2]
+        email = data[0][3]
+        mobileno = data[0][4]
+        city = data[0][5]
+        profile_url = data[0][6]
+    query='''CALL browse_orders({})'''.format(id)
+    curr.execute(query)
+    data=curr.fetchall()
+    orders=[]
+    cost=[]
+    for row in data:
+        item=[]
+        for col in row:
+            item.append(col)
+        query=''' CALL get_price({},{})'''.format(item[1],item[5])
+        curr.execute(query)
+        data = curr.fetchall()
+        item.append(data[0][0])
+        orders.append(item)
+    print(orders)
+    return render_template('browse_orders.html', login=session['login'], name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url, cus_type="Farmer",orders=orders,form=form)
+
+@app.route('/ongoing_purchases',methods=['GET','POST'])
+def ongoing_purchases():
+    if not session['login']:
+        return redirect(url_for('login'))
+    if not session['consumer']:
+        flash("Farmers cannot browse through On going Purchases")
+        return redirect(url_for('index'))
+    id = session.get('id', None)
+    curr = mysql.connection.cursor()
+    form = OngoingPurchases()
+    if form.validate_on_submit():
+        bid_id = form.bid_id.data
+        query='''CALL get_f_bid_details({})'''.format(bid_id)
+        curr.execute(query)
+        data=curr.fetchall()
+        query='''INSERT INTO acc_req(bid_id,req_id,f_id,cost_bid) VALUES({},{},{},{})'''.format(bid_id,data[0][1],data[0][0],data[0][2])
+        curr.execute(query)
+        mysql.connection.commit()
+        flash("You will be connected to the farmer in a while!!!\nThanks for using Farmer2Consumer")
+        return redirect(url_for('dashboard'))
+    query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM consumer WHERE idConsumer={} '''.format(id)
+    curr.execute(query)
+    data = curr.fetchall()
+    if int(data[0][1]) == 0:
+        return redirect(url_for('otp_form', id=session['id']))
+    name = ""
+    email = ""
+    mobileno = ""
+    city = ""
+    profile_url = ""
+    if data[0][0]:
+        name = data[0][0]+" "+data[0][2]
+        email = data[0][3]
+        mobileno = data[0][4]
+        city = data[0][5]
+        profile_url = data[0][6]
+    query='''CALL get_cons_req({})'''.format(id)
+    curr.execute(query)
+    data=curr.fetchall()
+    print(data)
+    cons_reqs=[]
+    for row in data:
+        for col in row:
+            cons_reqs.append(col)
+    req_details=[]
+    for req in cons_reqs:
+        item_details=[]
+        query='''CALL get_req_details({})'''.format(req)
+        curr.execute(query)
+        print(query)
+        data=curr.fetchall()
+        print(data)
+        item_details.append(data[0][0])
+        item_details.append(data[0][1])
+        item_details.append(data[0][2])
+        query ='''CALL farmer_count_min_req_id({},{})'''.format(id,req)
+        curr.execute(query)
+        data=curr.fetchall()
+        item_details.append(data[0][0])
+        item_details.append(data[0][1])
+        req_details.append(item_details)
+    req_farmer_details=[]
+    for req in cons_reqs:
+        single_req=[]
+        query='''CALL ongoing_purchases({},{})'''.format(id,req)
+        curr.execute(query)
+        data=curr.fetchall()
+        for row in data:
+            row_item=[]
+            for col in row:
+                row_item.append(col)
+            single_req.append(row_item)
+        req_farmer_details.append(single_req)
+    return render_template('ongoing_purchases.html', login=session['login'], name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url, cus_type="Consumer",cons_reqs=cons_reqs,req_details=req_details,req_farmer_details=req_farmer_details,form=form)
+
+
+@app.route('/accepted_orders',methods=['GET','POST'])
+def accepted_orders():
+    if not session['login']:
+        return redirect(url_for('login'))
+    if session['consumer']:
+        flash("Consumers cannot browse through accepted orders")
+        return redirect(url_for('index'))
+    id = session.get('id', None)
+    curr = mysql.connection.cursor()
+    form=SendItem()
+    if form.validate_on_submit():
+        bid_id=form.bid_id.data
+        query='''UPDATE acc_req SET sent=1 WHERE bid_id={}'''.format(bid_id)
+        curr.execute(query)
+        mysql.connection.commit() 
+        flash("You have to send the items to the consumer.Once the consumer receives the items.The transaction will be completed")
+    query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM farmer WHERE idfarmer={} '''.format(id)
+    curr.execute(query)
+    data = curr.fetchall()
+    if int(data[0][1]) == 0:
+        return redirect(url_for('otp_form', id=session['id']))
+    name = ""
+    email = ""
+    mobileno = ""
+    city = ""
+    profile_url = ""
+    if data[0][0]:
+        name = data[0][0]+" "+data[0][2]
+        email = data[0][3]
+        mobileno = data[0][4]
+        city = data[0][5]
+        profile_url = data[0][6]
+    query ='''CALL get_accepted_request_details({})'''.format(id)
+    curr.execute(query)
+    data=curr.fetchall()
+    accepts=[]
+    for row in data:
+        item=[]
+        for col in row:
+            item.append(col)
+        accepts.append(item)
+    print(accepts)
+    return render_template('accepted_orders.html', login=session['login'], name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url, cus_type="Farmer",accepts=accepts,form=form)
+
+@app.route('/finalize_purchases',methods=['GET','POST'])
+def finalize_purchases():
+    if not session['login']:
+        return redirect(url_for('login'))
+    if not session['consumer']:
+        flash("Farmers cannot finalize the purchases")
+        return redirect(url_for('index'))
+    id = session.get('id', None)
+    curr = mysql.connection.cursor()
+    query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM consumer WHERE idconsumer={} '''.format(id)
+    curr.execute(query)
+    data = curr.fetchall()
+    if int(data[0][1]) == 0:
+        return redirect(url_for('otp_form', id=session['id']))
+    name = ""
+    email = ""
+    mobileno = ""
+    city = ""
+    profile_url = ""
+    if data[0][0]:
+        name = data[0][0]+" "+data[0][2]
+        email = data[0][3]
+        mobileno = data[0][4]
+        city = data[0][5]
+        profile_url = data[0][6]
+    query ='''CALL finalize_purchase({})'''.format(id)
+    curr.execute(query)
+    data=curr.fetchall()
+    orders=[]
+    for row in data:
+        item=[]
+        for col in row:
+            item.append(col)
+        orders.append(item)
+    return render_template('finalize_purchases.html', login=session['login'], name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url, cus_type="Consumer",orders=orders)
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'), 500
 def generate_farmer_id():
     curr = mysql.connection.cursor()
     id = randint(0, 99999)

@@ -1,0 +1,64 @@
+{% extends 'dashboard.html' %} {% block mainbar %}
+<div class="ongoing-purchases">
+  {% if cons_reqs|length < 1 %}
+  <h3>No farmer has accepted your requests</h3>
+  {% else %}{% for req in cons_reqs %}
+  <div class="bid-card">
+    <div class="header">
+      <h3>
+        <em
+          >Order posted on {{ req_details[loop.index0][2] }} for
+          {{ req_details[loop.index0][1] }} kg of
+          {{ req_details[loop.index0][0] }}</em
+        >
+      </h3>
+      <h3>
+        <em>{% if req_details[loop.index0][3]==0%}No{% else %} {{ req_details[loop.index0][3] }} {% endif %} </em> farmers have bid for this
+        order and the least bid is
+        <em>Rs {{ req_details[loop.index0][4] }} </em>
+      </h3>
+    </div>
+    <div class="footer">
+    {% if req_details[loop.index0][3]!=0 %}
+      <table>
+        <tr>
+          <th>No</th>
+          <th>Name</th>
+          <th>Price Quoted</th>
+          <th>Location</th>
+          <th>Rating</th>
+          <th>Action</th>
+        </tr>
+        {% for data in req_farmer_details[loop.index0] %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ data[0] }}</td>
+          <td>Rs {{ data[1] }}</td>
+          <td>{{ data[2] }}</td>
+          <td>*****</td>
+          <td>
+            <form action="" method="POST">
+                {{form.hidden_tag()}}
+              <!-- <input
+                type="text"
+                id="{{ req }}"
+                class="invisible"
+                value="{{ req }}"
+                name="req_id"
+              /> -->
+              {{form.bid_id(value=data[3],class="invisible")}}
+              <!-- <input type="submit" value="Accept" /> -->
+              {{form.submit(value="Accept")}}
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <h3>We will inform you when any farmer accepts your order</h3>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %} {% endif %}
+</div>
+{% endblock %}
