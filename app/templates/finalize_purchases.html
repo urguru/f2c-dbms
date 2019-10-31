@@ -7,12 +7,19 @@
   <div class="finalize-card">
     <div class="text">
       Finalize your order from {{ item[0] }} for {{ item[1] }} kgs of
-      {{ item[2] }} for Rs {{ item[3] }} <br>
-      The date mentioned being {{item[4]}}
+      {{ item[2] }} for Rs {{ item[3] }} <br />
+      The date mentioned being {{ item[4] }}
     </div>
-    <div class="btns">
-      <button>Chat with {{ item[0] }}</button>
-     {% if item[5]!=0 %} <button>Order Received</button> {% endif %}
+    <div>
+      <form action="" class="btns" method="POST">
+        {{form.hidden_tag()}}
+        <button id={{item[6]}} type="button" onclick="showchat(this.id)">Chat with {{ item[0] }}</button>
+        {{form.bid_id(value=item[6],class="invisible")}}
+        {% if item[5]!=0 %} {{ form.submit() }} {% endif %}
+      </form>
+      <div class="chat-window invisible " id="chat-{{item[6]}}">
+        <iframe src="{{url_for('chatbox',id=item[6])}}" frameborder="0" width="300px" height="480px"></iframe>
+      <div>
     </div>
   </div>
   {% endfor %} {% endif %}

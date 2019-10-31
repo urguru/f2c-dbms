@@ -176,3 +176,11 @@ class OngoingPurchases(FlaskForm):
 class SendItem(FlaskForm):
     bid_id=StringField('bid_id')
     submit=SubmitField('Send The Items')
+
+class ItemReceived(FlaskForm):
+    bid_id=StringField('bid_id')
+    submit=SubmitField('Order Received')
+
+class SendMessage(FlaskForm):
+    text=TextAreaField("Message",validators=[DataRequired()])
+    submit=SubmitField("Send")

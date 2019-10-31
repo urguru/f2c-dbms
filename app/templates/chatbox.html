@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>Chat Window</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/chatbox.css')}}" />
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="chat-box">
+            <div class="chat-head">
+                <h2>{{name}}</h2>
+                <p>{{order_details[0]}} kgs of {{order_details[1]}} for Rs {{order_details[2]}} on {{order_details[3]}}</p>
+            </div>
+            <div class="chat-body">
+                {% if text_details|length < 1 %}
+                No Messages to display !!! <br>
+                Why dont you start the conversation
+                {% else %}
+                <div class="msg-insert">
+                    {% for texts in text_details %}
+                    <div class="{% if texts[1]==0 %}msg-send {% else %} msg-receive{% endif %}">
+                        <p>{{texts[0]}}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="chat-text">
+                    <form action="" method="POST" class="chat-text">
+                        <!-- <textarea placeholder="Type something here..."></textarea> -->
+                        {{form.hidden_tag()}}
+                        {{form.text(placeholder="Type something here")}}
+                        <button type="button" onclick="restart()">Refresh</button>
+                        <!-- <input type="submit" value="Send"> -->
+                        {{form.submit()}}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function restart()
+        {
+            location.reload();
+        }
+    </script>
+</body>
+
+</html>

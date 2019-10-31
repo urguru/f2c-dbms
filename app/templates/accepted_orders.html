@@ -6,6 +6,7 @@
   </h3>
   <h3>Keep bidding for more orders being accepted!!!</h3>
   {% else %} {% for order in accepts %}
+  {% if order[7]!=1 %}
   <div class="accept-card">
     <div class="text">
       We are glad to inform you that <b>{{ order[0] }}</b> has accepted your
@@ -15,13 +16,17 @@
     </div>
     <div>
       <form action="" method="POST" class="btns">
-        <button>Chat with {{ order[0] }}</button>
+        <button type="button" id={{order[5]}} onclick="showchat(this.id)">Chat with {{ order[0] }}</button>
         {{ form.hidden_tag() }}
         {{form.bid_id(value=order[5],class="invisible")}}
+        <div class="chat-window invisible" id="chat-{{order[5]}}">
+        <iframe src="{{url_for('chatbox',id=order[5])}}" frameborder="0" width="300px" height="480px"></iframe>
+        </div>
         {% if order[6]!=1 %} {{ form.submit() }}{% endif %}
       </form>
     </div>
   </div>
+  {% endif %}
   {% endfor %} {% endif %}
 </div>
 {% endblock %}

@@ -342,7 +342,8 @@ th {
 .btns {
   display: flex;
 }
-.btns * {
+.btns button,
+input {
   margin: 20px;
 }
 
@@ -353,6 +354,14 @@ th {
 }
 .finalize-purchase * {
   text-align: center;
+}
+
+/* Chat Window */
+.chat-window {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  margin: 0 !important;
 }
 
 @media screen and (min-width: 676px) {

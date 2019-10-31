@@ -56,7 +56,9 @@
     {% else %}
     <h3><a href="{{ url_for('purchase_items') }}">Purchase Items</a></h3>
     <h3><a href="{{ url_for('ongoing_purchases') }}">On-going Purchases</a></h3>
-    <h3><a href="{{url_for('finalize_purchases')}}">Finalize purchases</a></h3>
+    <h3>
+      <a href="{{ url_for('finalize_purchases') }}">Finalize purchases</a>
+    </h3>
     <h3><a href="">Past Purchases</a></h3>
     {% endif %}
     <h3><a href="">Market Prices</a></h3>
@@ -87,6 +89,11 @@
         maxDate: "+15D"
       });
     });
+    function showchat(clicked) {
+      console.log(clicked);
+      var id="#chat-"+clicked;
+      document.querySelector(id).classList.remove("invisible");
+    }
   </script>
 
   {% endblock %}

@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from app import app, mysql
-from app.forms import FarmerRegistrationForm, FarmerLoginForm, FarmerOrConsumer, ConsumerLoginForm, ConsumerRegistrationForm, OTPForm, ResetPasswordRequestForm, ResetPasswordForm,PurchaseItem,BrowseItems,OngoingPurchases,SendItem
+from app.forms import FarmerRegistrationForm, FarmerLoginForm, FarmerOrConsumer, ConsumerLoginForm, ConsumerRegistrationForm, OTPForm, ResetPasswordRequestForm, ResetPasswordForm,PurchaseItem,BrowseItems,OngoingPurchases,SendItem,ItemReceived,SendMessage
 from app.cities import cities
 from app.password_check import set_password
 from app.email import send_email_verify_OTP_message, send_password_reset_email
@@ -551,6 +551,7 @@ def accepted_orders():
         curr.execute(query)
         mysql.connection.commit() 
         flash("You have to send the items to the consumer.Once the consumer receives the items.The transaction will be completed")
+        return redirect(url_for('dashboard'))
     query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM farmer WHERE idfarmer={} '''.format(id)
     curr.execute(query)
     data = curr.fetchall()
@@ -588,6 +589,16 @@ def finalize_purchases():
         return redirect(url_for('index'))
     id = session.get('id', None)
     curr = mysql.connection.cursor()
+    form=ItemReceived()
+    if form.validate_on_submit():
+        print("Hello")
+        bid_id=form.bid_id.data
+        print(bid_id)
+        query='''UPDATE acc_req SET received=1 WHERE bid_id={}'''.format(bid_id)
+        curr.execute(query)
+        mysql.connection.commit()
+        flash("The transaction has been completed")
+        return redirect(url_for('dashboard'))
     query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM consumer WHERE idconsumer={} '''.format(id)
     curr.execute(query)
     data = curr.fetchall()
@@ -613,7 +624,71 @@ def finalize_purchases():
         for col in row:
             item.append(col)
         orders.append(item)
-    return render_template('finalize_purchases.html', login=session['login'], name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url, cus_type="Consumer",orders=orders)
+        print(item[6])
+    return render_template('finalize_purchases.html', login=session['login'], name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url, cus_type="Consumer",orders=orders,form=form)
+
+
+@app.route('/chatbox/<id>',methods=['GET','POST'])
+def chatbox(id):
+    if not session['login']:
+        return redirect(url_for('login'))
+    bid_id=id
+    login_id=session['id']
+    curr=mysql.connection.cursor()
+    query='''CALL get_c_f_id({})'''.format(bid_id)
+    curr.execute(query)
+    data=curr.fetchall()
+    name=''
+    if login_id!=data[0][0] and  login_id!=data[0][1]:
+        flash("You are trying to access an unathorised page")
+        return redirect(url_for('dashboard'))
+    if session['consumer']:
+        query='''SELECT firstname from farmer where idfarmer={}'''.format(data[0][0])
+        print(query)
+        curr.execute(query)
+        data=curr.fetchall()
+        name=data[0][0]
+    else:
+        query = '''SELECT firstname from consumer where idconsumer={}'''.format(data[0][1])
+        curr.execute(query)
+        data = curr.fetchall()
+        name = data[0][0]
+    query='''CALL get_messages({})'''.format(bid_id)
+    curr.execute(query)
+    data=curr.fetchall()
+    details=[]
+    for row in data:
+        text_details=[]
+        text_details.append(row[0])
+        if(session['consumer']):
+            if(row[1]):
+                text_details.append(0)
+            else:
+                text_details.append(1)
+        else:
+            if(row[1]):
+                text_details.append(1)
+            else:
+                text_details.append(0)
+        details.append(text_details)
+    order_details=[]
+    query='''CALL get_order_details({})'''.format(bid_id)
+    curr.execute(query)
+    data=curr.fetchall()
+    for row in data:
+        for col in row:
+            order_details.append(col)
+    form=SendMessage()
+    if form.validate_on_submit():
+        text=form.text.data
+        f_or_c=1 if session['consumer'] else 0
+        query ='''INSERT INTO chats(bid_id,text,f_or_c,date) values({},"{}",{},current_timestamp())'''.format(bid_id,text,f_or_c)
+        curr.execute(query)
+        mysql.connection.commit()
+        return redirect(url_for('chatbox',id=bid_id))
+    return render_template('chatbox.html',text_details=details,order_details=order_details,form=form,name=name)
+
+
 
 @app.errorhandler(404)
 def not_found_error(error):
