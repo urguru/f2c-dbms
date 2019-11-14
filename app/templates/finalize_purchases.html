@@ -13,12 +13,12 @@
     <div>
       <form action="" class="btns" method="POST">
         {{form.hidden_tag()}}
-        <button id={{item[6]}} type="button" onclick="showchat(this.id)">Chat with {{ item[0] }}</button>
+        <button id="b{{item[6]}}" type="button" onclick="showchat(this.id)">Chat with {{ item[0] }}</button>
+        <button id="a{{item[6]}}" type="button" onclick="clearchat(this.id)" class="invisible">Minimize the chat</button>
         {{form.bid_id(value=item[6],class="invisible")}}
         {% if item[5]!=0 %} {{ form.submit() }} {% endif %}
       </form>
       <div class="chat-window invisible " id="chat-{{item[6]}}">
-        <iframe src="{{url_for('chatbox',id=item[6])}}" frameborder="0" width="300px" height="480px"></iframe>
       <div>
     </div>
   </div>

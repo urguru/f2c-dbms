@@ -73,8 +73,10 @@ form hr {
   margin-bottom: 20px;
   width: 80%;
 }
-form h4 a {
+form h4 a,
+.login-button a {
   color: black;
+  text-decoration: none;
 }
 /* Home Page */
 .navbar {
@@ -160,6 +162,7 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+  color: white;
 }
 /* Dashboard */
 .dashboard {
@@ -339,8 +342,15 @@ th {
 .accepted_orders * {
   text-align: center;
 }
+.text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .btns {
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .btns button,
 input {
@@ -354,6 +364,7 @@ input {
 }
 .finalize-purchase * {
   text-align: center;
+  text-align: center;
 }
 
 /* Chat Window */
@@ -362,6 +373,146 @@ input {
   right: 0;
   bottom: 0;
   margin: 0 !important;
+}
+
+/* Notifications */
+.finalize-purchase a {
+  color: black;
+  text-decoration: none;
+}
+
+/* Ketan Contents */
+.homepage {
+  z-index: -1;
+  /* background-image: url("field.jpg"); */
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-x: center;
+  background-position-y: center;
+  width: 100%;
+  height: 100%;
+}
+.section-content {
+  z-index: -1;
+  overflow: hidden;
+  width: 100%;
+  height: 91.9vh;
+  top: 0px;
+  left: 0px;
+}
+.tint {
+  z-index: 1;
+  background: black;
+  opacity: 0.7;
+  height: 100%;
+  widows: 100%;
+}
+.home-header {
+  z-index: 2;
+  color: white;
+  font-size: 70px;
+  margin-top: 100px;
+  margin-bottom: 150px;
+  display: block;
+}
+.login-button {
+  margin: 20px;
+  z-index: 2;
+  width: 300px;
+  display: block;
+}
+.home-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.bg-img {
+  background-image: url(farm.jpg);
+  background-size: cover;
+  width: 100%;
+  height: 91.9vh;
+}
+
+slider {
+  display: block;
+  width: 100%;
+  height: 91.9vh;
+  overflow: hidden;
+  position: absolute;
+}
+slider > * {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: slide 12s infinite;
+  overflow: hidden;
+}
+slide:nth-child(1) {
+  left: 0%;
+  animation-delay: -1s;
+  background-image: url("field.jpg");
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+}
+slide:nth-child(2) {
+  animation-delay: 2s;
+  background-image: url(farmer3.jpg);
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+}
+slide:nth-child(3) {
+  animation-delay: 5s;
+  background-image: url(field2.jpg);
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+}
+slide:nth-child(4) {
+  left: 0%;
+  animation-delay: 8s;
+  background-image: url(field3.jpg);
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+}
+slide p {
+  font-family: comfortaa;
+  font-size: 70px;
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+  margin-top: 340px;
+  color: black;
+}
+@keyframes slide {
+  0% {
+    left: 100%;
+    width: 100%;
+  }
+  5% {
+    left: 0%;
+  }
+  25% {
+    left: 0%;
+  }
+  30% {
+    left: -100%;
+    width: 100%;
+  }
+  30.0001% {
+    left: -100%;
+    width: 0%;
+  }
+  100% {
+    left: 100%;
+    width: 0%;
+  }
 }
 
 @media screen and (min-width: 676px) {

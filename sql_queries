@@ -35,3 +35,25 @@ BEGIN
     WHERE NEW.bid_id!=f_bid.bid_id AND 
     r_id IN (select r_id FROM f_bid WHERE r_id!=(select r_id from f_bid where  NEW.bid_id=f_bid.bid_id));
 END
+
+
+CREATE DEFINER = CURRENT_USER TRIGGER `f2c`.`chats_AFTER_INSERT` AFTER INSERT ON `chats` FOR EACH ROW
+BEGIN
+    DECLARE CNT INT;
+    DECLARE TEMP INT;
+    CALL count_notification_bid_id(NEW.bid_id,CNT);
+    IF (CNT=2)
+    THEN
+        SET TEMP=1;
+    ELSEIF(CNT=1)
+    THEN
+        IF ((SELECT f_or_c FROM chats c,notfications n where c.msg_id=n.msg_id limit 1)=(NEW.f_or_c))
+        THEN
+            SET TEMP=1;
+        ELSE
+            INSERT INTO notfications(bid_id,msg_id,date) VALUES(new.bid_id,new.msg_id,CURRENT_DATE());
+        END IF;
+    ELSE
+        INSERT INTO notfications(bid_id,msg_id,date) VALUES(new.bid_id,new.msg_id,CURRENT_DATE());
+    END IF;
+END;

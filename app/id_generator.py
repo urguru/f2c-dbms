@@ -1,6 +1,7 @@
 from app import mysql
 from random import randint
 
+# Generate unique ID's for the farmer and consumer
 def generate_farmer_id():
     curr=mysql.connection.cursor()
     id=randint(0,99999)

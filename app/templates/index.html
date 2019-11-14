@@ -8,5 +8,31 @@
     </li>
     {% endfor %}
 </ul>
+
 {% endif %} {% endwith %}
+<section class="section-content">
+    <slider>
+        <slide>
+            <p></p>
+        </slide>
+        <slide>
+            <p></p>
+        </slide>
+        <slide>
+            <p></p>
+        </slide>
+        <slide>
+            <p></p>
+        </slide>
+    </slider>
+    <div class="tint">
+        <div class="home-container">
+            <h1 class="home-header">Farmer 2 Consumer</h1>
+            {% if login==False %}
+            <button type="button" class="login-button" value="Login"><a href="{{url_for('login')}}">Login</a></button>
+            <button type="button" class="login-button" value="Login"><a href="{{url_for('register')}}">Sign Up</a></button>
+            {% endif %}
+        </div>
+    </div>
+</section>
 {% endblock %}

@@ -7,6 +7,9 @@
     <title>F2C Farmer To Consumer</title>
     <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}"/>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/facebook.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/products.css') }}">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   </head>
@@ -28,22 +31,50 @@
           <li><a href="{{ url_for('index') }}">Home</a></li>
           <li>
             <a href="{{ url_for('dashboard') }}"
-              >{%if name%}{{ name }}{%else%}{{ User }}{% endif %}'s Dashboard</a
+              >{%if name%}{{ name +"'s" }}{%else%}{{ User }}{% endif %} Dashboard</a
             >
           </li>
-          <li><a href="">Products</a></li>
-          <li><a href="">About Us</a></li>
-          <li><a href="">Contact Us</a></li>
+          <li><a href="{{url_for('products')}}">Products</a></li>
+          <li><a href="{{url_for('about')}}">About Us</a></li>
+          <li><a href="{{url_for('contact')}}">Contact Us</a></li>
           {% if login==False %}
           <li><a href="{{ url_for('login') }}">Login</a></li>
           <li><a href="{{ url_for('register') }}">Register</a></li>
           {% else %}
-          <li><a href="">Notifications <span class="notify-no">9</span></a></li>
+          <li><a href="{{url_for('notifications')}}">Notifications <span class="" id="notify-no">9</span></a></li>
           <li><a href="{{ url_for('logout') }}">Log Out</a></li>
           {% endif %}
         </ul>
       </div>
     </div>
     {% block content %}{% endblock %}
+    <script>
+      function show_notification()
+      {
+        var request = new XMLHttpRequest()
+
+        // Open a new connection, using the GET request on the URL endpoint
+        request.open('GET', '/get_notification_count', true)
+
+        request.onload = function () {
+          var data = JSON.parse(this.response)
+          document.querySelector("#notify-no").innerHTML=data['count'];
+          if(data['count']!="")
+          {
+            document.querySelector("#notify-no").classList.add("notify-no");
+          }
+          else
+          {
+            document.querySelector("#notify-no").classList.remove("notify-no");
+          }
+        }
+
+        // Send request
+        request.send()
+
+        setTimeout(show_notification, 5000);
+      }
+      show_notification();
+    </script>
   </body>
 </html>

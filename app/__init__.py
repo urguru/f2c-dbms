@@ -4,6 +4,7 @@ from flask_mysqldb import MySQL
 from flask_login import LoginManager
 from flask_mail import Mail
 
+# Create all the models
 app=Flask(__name__)
 app.config.from_object(Config)
 mysql=MySQL(app)

@@ -1,0 +1,16 @@
+{% extends 'dashboard.html' %} {% block mainbar %}
+<div class="finalize-purchase">
+  {% if market|length < 1 %}
+  <h3>No orders have been completed to display !!!</h3>
+  <h3>Check after some time</h3>
+  {% else %} {% for order in market %}
+  <div class="finalize-card">
+    <div class="text">
+      {{ order[0] }} purchased {{ order[1] }} kgs of {{ order[2] }} from
+      {{ order[3] }} for Rs {{ order[4] }} which was delivered before
+      {{ order[5] }}
+    </div>
+  </div>
+  {% endfor %} {% endif %}
+</div>
+{% endblock %}

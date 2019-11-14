@@ -5,24 +5,24 @@
     Sorry there are no accepted orders from consumers for you to display :(
   </h3>
   <h3>Keep bidding for more orders being accepted!!!</h3>
-  {% else %} {% for order in accepts %}
-  {% if order[7]!=1 %}
+  {% else %} {% for item in accepts %}
+  {% if item[8]!=1 %}
   <div class="accept-card">
     <div class="text">
-      We are glad to inform you that <b>{{ order[0] }}</b> has accepted your
-      order for bidding amount of <b>Rs {{ order[1] }} </b>for
-      <b>{{ order[2] }} kgs</b> of <b>{{ order[3] }}</b> which should be
-      delivered by <b>{{ order[4] }}</b>
+      We are glad to inform you that <b>{{ item[0] }}</b> has accepted your
+      item for bidding amount of <b>Rs {{ item[1] }} </b>for
+      <b>{{ item[2] }} kgs</b> of <b>{{ item[3] }}</b> which should be
+      delivered by <b>{{ item[4] }}</b>
     </div>
     <div>
       <form action="" method="POST" class="btns">
-        <button type="button" id={{order[5]}} onclick="showchat(this.id)">Chat with {{ order[0] }}</button>
+        <button type="button" id="b{{item[6]}}" onclick="showchat(this.id)">Chat with {{ item[0] }}</button>
+        <button id="a{{item[6]}}" type="button" onclick="clearchat(this.id)" class="invisible">Minimize the chat</button>
         {{ form.hidden_tag() }}
-        {{form.bid_id(value=order[5],class="invisible")}}
-        <div class="chat-window invisible" id="chat-{{order[5]}}">
-        <iframe src="{{url_for('chatbox',id=order[5])}}" frameborder="0" width="300px" height="480px"></iframe>
+        {{form.bid_id(value=item[5],class="invisible")}}
+        <div class="chat-window invisible" id="chat-{{item[6]}}">
         </div>
-        {% if order[6]!=1 %} {{ form.submit() }}{% endif %}
+        {% if item[7]!=1 %} {{ form.submit() }}{% endif %}
       </form>
     </div>
   </div>

@@ -9,7 +9,7 @@
             <option value="{{item}}" SELECTED>{{item}}</option>"
             {% endfor %}
         </select>
-        <!-- <input type="number" name="qty" id="qty" placeholder="Quantity in Kilograms" /> -->
+        <!-- <input type="numbe" name="qty" id="qty" placeholder="Quantity in Kilograms" /> -->
         {{form.quantity(placeholder="Quantity in Kilograms",type="number")}}
         {% for error in form.quantity.errors %}
         <span> {{ error }}</span>

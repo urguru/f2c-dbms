@@ -1,0 +1,18 @@
+{% extends 'dashboard.html' %}
+{% block mainbar %}
+<div class="finalize-purchase">
+    {% if notify|length < 1 %}
+    <h3>There are no notifications to display!!!</h3>
+    <h3>Stay tuned :)</h3>
+    {% else %}
+    {% for item in notify %}
+    <a href="{{url_for('chatbox',id=item[4])}}" target="_blank">
+        <div class="finalize-card">
+            <div class="text">
+                You have a message from {{item[0]}} related to the order of {{item[1]}} of {{item[2]}} kgs of the date {{item[3]}}
+            </div>
+    </a>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

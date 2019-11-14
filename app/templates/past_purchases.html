@@ -1,0 +1,27 @@
+{% extends 'dashboard.html' %} {% block mainbar %}
+<div class="finalize-purchase">
+  {% if orders|length < 1 %}
+  <h3>You havent purchased any items yet</h3>
+  <h3>We will notify you when you finish one :)</h3>
+  {% else %} {% for item in orders %}
+  <div class="finalize-card">
+    <div class="text">
+      You ordered from {{ item[0] }} for {{ item[1] }} kgs of {{ item[2] }} for
+      Rs {{ item[3] }} <br />
+      The date mentioned being {{ item[4] }}
+      The order has been sent to you and you have acknowledged it
+    </div>
+    <div class="btns">
+      <button id="b{{ item[6] }}" type="button" onclick="showchat(this.id)">
+        Chat History of {{ item[0] }}
+      </button>
+      <button id="a{{item[6]}}" type="button" onclick="clearchat(this.id)" class="invisible">Minimize the chat</button>
+      <div class="chat-window invisible " id="chat-{{ item[6] }}">
+
+        <div></div>
+      </div>
+    </div>
+  </div>
+  {% endfor %} {% endif %}
+</div>
+{% endblock %}

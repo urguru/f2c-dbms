@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, session, flash
+from flask import render_template, request, redirect, url_for, session, flash,jsonify
 from app import app, mysql
 from app.forms import FarmerRegistrationForm, FarmerLoginForm, FarmerOrConsumer, ConsumerLoginForm, ConsumerRegistrationForm, OTPForm, ResetPasswordRequestForm, ResetPasswordForm,PurchaseItem,BrowseItems,OngoingPurchases,SendItem,ItemReceived,SendMessage
 from app.cities import cities
@@ -648,11 +648,17 @@ def chatbox(id):
         curr.execute(query)
         data=curr.fetchall()
         name=data[0][0]
+        query='''CALL delete_consumer_notification({})'''.format(bid_id)
+        curr.execute(query)
+        mysql.connection.commit()
     else:
         query = '''SELECT firstname from consumer where idconsumer={}'''.format(data[0][1])
         curr.execute(query)
         data = curr.fetchall()
         name = data[0][0]
+    query = '''CALL delete_farmer_notification({})'''.format(bid_id)
+    curr.execute(query)
+    mysql.connection.commit()
     query='''CALL get_messages({})'''.format(bid_id)
     curr.execute(query)
     data=curr.fetchall()
@@ -686,9 +692,234 @@ def chatbox(id):
         curr.execute(query)
         mysql.connection.commit()
         return redirect(url_for('chatbox',id=bid_id))
+    
     return render_template('chatbox.html',text_details=details,order_details=order_details,form=form,name=name)
 
+@app.route('/past_purchases',methods=['GET','POST'])
+def past_purchases():
+    if not session['login']:
+        return redirect(url_for('login'))
+    if not session['consumer']:
+        flash("You are not a consumer")
+        return redirect(url_for('index'))
+    id = session.get('id', None)
+    curr = mysql.connection.cursor()
+    query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM consumer WHERE idconsumer={} '''.format(id)
+    curr.execute(query)
+    data = curr.fetchall()
+    if int(data[0][1]) == 0:
+        return redirect(url_for('otp_form', id=session['id']))
+    name = ""
+    email = ""
+    mobileno = ""
+    city = ""
+    profile_url = ""
+    if data[0][0]:
+        name = data[0][0]+" "+data[0][2]
+        email = data[0][3]
+        mobileno = data[0][4]
+        city = data[0][5]
+        profile_url = data[0][6]
+    query = '''CALL past_purchases({})'''.format(id)
+    curr.execute(query)
+    data = curr.fetchall()
+    orders = []
+    for row in data:
+        item = []
+        for col in row:
+            item.append(col)
+        orders.append(item)
+        print(item[6])
+    return render_template('past_purchases.html', login=session['login'], name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url, cus_type="Consumer",orders=orders)
 
+
+@app.route('/past_orders', methods=['GET', 'POST'])
+def past_orders():
+    if not session['login']:
+        return redirect(url_for('login'))
+    if session['consumer']:
+        flash("You are not a farmer")
+        return redirect(url_for('index'))
+    id = session.get('id', None)
+    curr = mysql.connection.cursor()
+    query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM farmer WHERE idfarmer={} '''.format(id)
+    curr.execute(query)
+    data = curr.fetchall()
+    if int(data[0][1]) == 0:
+        return redirect(url_for('otp_form', id=session['id']))
+    name = ""
+    email = ""
+    mobileno = ""
+    city = ""
+    profile_url = ""
+    if data[0][0]:
+        name = data[0][0]+" "+data[0][2]
+        email = data[0][3]
+        mobileno = data[0][4]
+        city = data[0][5]
+        profile_url = data[0][6]
+    query = '''CALL past_orders({})'''.format(id)
+    curr.execute(query)
+    data = curr.fetchall()
+    orders = []
+    for row in data:
+        item = []
+        for col in row:
+            item.append(col)
+        orders.append(item)
+        print(item[6])
+    return render_template('past_orders.html', login=session['login'], name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url, cus_type="Farmer", orders=orders)
+
+
+@app.route('/market_prices',methods=['GET','POST'])
+def market_prices():
+    if not session['login']:
+        return redirect(url_for('login'))
+    id = session.get('id', None)
+    type = session.get('consumer', None)
+    name = 'User'
+    email = ''
+    mobileno = ''
+    word = ""
+    city = ''
+    profile_url = ''
+    if id:
+        curr = mysql.connection.cursor()
+        if type:
+            query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM consumer WHERE idConsumer={} '''.format(
+                id)
+            curr.execute(query)
+            data = curr.fetchall()
+            if int(data[0][1]) == 0:
+                return redirect(url_for('otp_form', id=session['id']))
+            if data[0][0]:
+                name = data[0][0]+" "+data[0][2]
+                email = data[0][3]
+                mobileno = data[0][4]
+                city = data[0][5]
+                profile_url = data[0][6]
+        else:
+            query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM farmer WHERE idfarmer={} '''.format(
+                id)
+            curr.execute(query)
+            data = curr.fetchall()
+            if int(data[0][1]) == 0:
+                return redirect(url_for('otp_form', id=session['id']))
+            if data[0][0]:
+                name = data[0][0]+" "+data[0][2]
+                email = data[0][3]
+                mobileno = data[0][4]
+                city = data[0][5]
+                profile_url = data[0][6]
+        if session['consumer']:
+            word = "Consumer"
+        else:
+            word = "Farmer"
+        query='''call market_prices()'''
+        curr.execute(query)
+        data=curr.fetchall()
+        market=[]
+        for row in data:
+            item=[]
+            for col in row:
+                item.append(col)
+            market.append(item)
+    return render_template('market_prices.html', login=session['login'], name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url, cus_type=word,market=market)
+
+@app.route('/about',methods=['GET'])
+def about():
+    return render_template('about.html')
+
+@app.route('/contact',methods=['GET'])
+def contact():
+    return render_template('contact.html')
+
+@app.route('/products',methods=['GET'])
+def products():
+    return render_template('products.html')
+
+@app.route('/get_notification_count',methods=['GET'])
+def get_notification_count():
+    curr=mysql.connection.cursor()
+    res={}
+    if session['login']:
+        if session['consumer']:
+            query='''CALL get_consumer_n_count({})'''.format(session['id'])
+            curr.execute(query)
+            data=curr.fetchall()
+            print("consumer")
+        else:
+            query='''CALL get_farmer_n_count({})'''.format(session['id'])
+            curr.execute(query)
+            data=curr.fetchall()
+            print("farmer")
+        res['count']=data[0][0] if data[0][0] else ""
+        print(res['count'])
+        return jsonify(res)
+    res['count']=""
+    return jsonify(res)
+
+@app.route('/notifications',methods=['GET','POST'])
+def notifications():
+    if not session['login']:
+        return redirect(url_for('login'))
+    id = session.get('id', None)
+    type = session.get('consumer', None)
+    name = 'User'
+    email = ''
+    mobileno = ''
+    word = ""
+    city = ''
+    profile_url = ''
+    notify=[]
+    if session['login']:
+        curr = mysql.connection.cursor()
+        if type:
+            query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM consumer WHERE idConsumer={} '''.format(
+                id)
+            curr.execute(query)
+            data = curr.fetchall()
+            if int(data[0][1]) == 0:
+                return redirect(url_for('otp_form', id=session['id']))
+            if data[0][0]:
+                name = data[0][0]+" "+data[0][2]
+                email = data[0][3]
+                mobileno = data[0][4]
+                city = data[0][5]
+                profile_url = data[0][6]
+        else:
+            query = ''' SELECT firstname,verifiedemail,lastname,emailid,mobileno,city,profile_pic FROM farmer WHERE idfarmer={} '''.format(
+                id)
+            curr.execute(query)
+            data = curr.fetchall()
+            if int(data[0][1]) == 0:
+                return redirect(url_for('otp_form', id=session['id']))
+            if data[0][0]:
+                name = data[0][0]+" "+data[0][2]
+                email = data[0][3]
+                mobileno = data[0][4]
+                city = data[0][5]
+                profile_url = data[0][6]
+        if session['consumer']:
+            word = "Consumer"
+            query='''CALL get_consumer_notifications({})'''.format(id)
+            curr.execute(query)
+            data=curr.fetchall()
+            for row in data:
+                val=[]
+                for col in row:
+                    val.append(col)
+                notify.append(val)
+        else:
+            word = "Farmer"
+            query='''CALL get_farmer_notifications({})'''.format(id)
+            data = curr.fetchall()
+            for row in data:
+                val = []
+                for col in row:
+                    val.append(col)
+                notify.append(val)  
+    return render_template('notifications.html', login=session['login'], name=name, email=email, mobileno=mobileno, city=city, profile_url=profile_url, cus_type=word,notify=notify)
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -725,4 +956,4 @@ def generate_consumer_id():
 
 
 def generate_otp():
-    return randint(10000, 999999)
+    return randint(100000, 999999)

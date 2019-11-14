@@ -1,6 +1,6 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
+# Basic functions to verify the password
 def set_password(password):
     password_hash = generate_password_hash(password)
     return password_hash

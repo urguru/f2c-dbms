@@ -52,17 +52,17 @@
     {% if cus_type=="Farmer" %}
     <h3><a href="{{ url_for('browse_orders') }}">Browse Orders</a></h3>
     <h3><a href="{{ url_for('accepted_orders') }}">Accepted Orders</a></h3>
-    <h3><a href="">Past Orders</a></h3>
+    <h3><a href="{{ url_for('past_orders') }}">Past Orders</a></h3>
     {% else %}
     <h3><a href="{{ url_for('purchase_items') }}">Purchase Items</a></h3>
     <h3><a href="{{ url_for('ongoing_purchases') }}">On-going Purchases</a></h3>
     <h3>
       <a href="{{ url_for('finalize_purchases') }}">Finalize purchases</a>
     </h3>
-    <h3><a href="">Past Purchases</a></h3>
+    <h3><a href="{{ url_for('past_purchases') }}">Past Purchases</a></h3>
     {% endif %}
-    <h3><a href="">Market Prices</a></h3>
-    <h3><a href="">Notifications</a></h3>
+    <h3><a href="{{ url_for('market_prices') }}">Market Prices</a></h3>
+    <h3><a href="{{url_for('notifications')}}">Notifications</a></h3>
     <h3><a href="">Raise an Issue</a></h3>
   </div>
   <div class="mainbar">
@@ -91,9 +91,32 @@
     });
     function showchat(clicked) {
       console.log(clicked);
-      var id="#chat-"+clicked;
+      var str = ""
+      for (var i = 1; i < clicked.length; ++i) {
+        str += clicked[i];
+      }
+      var id = "#chat-" + str;
+      document.querySelector(id).classList.remove("invisible");
+      document.querySelector(id).innerHTML= "<iframe src=\"\\chatbox\\"+str+"\" frameborder=\"0\" width=\"300px\"height=\"480px\"></iframe>";
+      id="#"+clicked;
+      document.querySelector(id).classList.add("invisible");
+      id="#a"+str;
       document.querySelector(id).classList.remove("invisible");
     }
+    function clearchat(clicked){
+      var str=""
+      for(var i=1;i<clicked.length;++i)
+      {
+        str+=clicked[i];
+      }
+      var id="#chat-"+str;
+      document.querySelector(id).classList.add("invisible");
+      id="#b"+str;
+      document.querySelector(id).classList.remove("invisible");
+      id="#"+clicked;
+      document.querySelector(id).classList.add("invisible");
+    }
+    
   </script>
 
   {% endblock %}

@@ -9,5 +9,6 @@ OTP - {{otp}}
 
 The OTP will be valid only for 5 minutes
 
+
 Regards
 Farmer 2 Consumer Team
