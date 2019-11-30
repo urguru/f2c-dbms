@@ -1,0 +1,12 @@
+select concat(c.firstname," ",c.lastname),i.name,r.qty,r.date,n.bid_id,n.msg_id
+from consumer c,items i,c_req r,notifications n,chats m,acc_req a
+where m.bid_id=n.bid_id and a.bid_id=n.bid_id and a.f_id=55188 and a.req_id=r.r_id and i.i_id=r.i_id and c.idconsumer=r.c_id and n.msg_id=m.msg_id and m.f_or_c=1
+order by n.date desc;
+select *
+from notifications n,chats m,acc_req a,consumer c,items i,c_req r,
+where m.bid_id=n.bid_id and a.bid_id=n.bid_id and a.f_id=55188 and a.req_id=r.r_id and i.i_id=r.i_id and c.idconsumer=r.c_id and n.msg_id=m.msg_id and m.f_or_c=1
+order by n.date desc;
+select n.bid_id,n.msg_id
+from notifications n,chats m,acc_req a,consumer c,items i,c_req r
+where m.bid_id=n.bid_id and n.msg_id=m.msg_id and a.bid_id=n.bid_id and a.f_id=55188 and a.req_id=r.r_id and i.i_id=r.i_id and c.idconsumer=r.c_id and n.msg_id=m.msg_id and m.f_or_c=1
+order by n.date desc;

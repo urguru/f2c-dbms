@@ -1,8 +1,8 @@
 CREATE TABLE `consumer` (
 `idConsumer` int(11) NOT NULL,
-`FirstName` varchar(20) NOT NULL,
-`LastName` varchar(20) NOT NULL,
-`EmailId` varchar(30) NOT NULL,
+`Firs`Name` `v`a`ch`r`20` `OT `U`L,
+`L`s`Name` `v`a`ch`r`20` `OT `U`L,
+`E`ailId` varchar(30) NOT NULL,
 `MobileNo` varchar(10) NOT NULL,
 `Password_Hash` varchar(255) NOT NULL,
 `City` varchar(20) NOT NULL,
@@ -15,9 +15,9 @@ UNIQUE KEY `MobileNo_UNIQUE` (`MobileNo`)
 
 CREATE TABLE `farmer` (
 `idFarmer` int(11) NOT NULL,
-`FirstName` varchar(20) NOT NULL,
-`LastName` varchar(20) NOT NULL,
-`EmailId` varchar(30) NOT NULL,
+`Firs`Name` `v`a`ch`r`20` `OT `U`L,
+`L`s`Name` `v`a`ch`r`20` `OT `U`L,
+`E`ailId` varchar(30) NOT NULL,
 `MobileNo` varchar(10) NOT NULL,
 `Password_Hash` varchar(255) NOT NULL,
 `City` varchar(20) NOT NULL,
@@ -57,3 +57,29 @@ BEGIN
         INSERT INTO notfications(bid_id,msg_id,date) VALUES(new.bid_id,new.msg_id,CURRENT_DATE());
     END IF;
 END;
+
+
+
+abhijna hosad
+14 Nov 2019, 12:32 (6 days ago)
+to me
+
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Banana',60,55,50,45,40);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Watermelon',30,27,25,20,15);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Chikku',40,38,35,30,25);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Tomato',20,18,15,13,10);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Onion',30,27,25,22,20);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Orange',60,55,50,47,45);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Wheat',80,77,74,70,68);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Jowar',70,67,65,60,58);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Rice',90,87,85,80,75);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Potato',25,22,20,18,15);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Grapes',40,35,32,30,28);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Guava',20,18,15,13,10);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Chilly',15,13,10,8,6);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Cucumber',30,28,25,23,20);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Capsicum',35,32,30,27,25);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Corn',20,18,15,13,10);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Soyabeans',60,55,50,45,40);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Peanuts',65,63,60,58,50);
+insert into items (`name`,`5`,`10`,`50`,`100`,`above`)values('Pineapple',35,30,28,25,20);

@@ -419,8 +419,17 @@ def browse_orders():
     curr = mysql.connection.cursor()
     form=BrowseItems()
     if form.validate_on_submit():
-        bid_price=form.price.data
+        bid_price=int(form.price.data)
         r_id=request.form['r_id']
+        query='''SELECT i_id,qty from c_req WHERE r_id={}'''.format(r_id)
+        curr.execute(query)
+        data=curr.fetchall()
+        query = ''' CALL get_price({},{})'''.format(data[0][0], data[0][1])
+        curr.execute(query)
+        data = curr.fetchall()
+        if bid_price<data[0][0]:
+            flash("You cannot bid for a price lower than the minumum mentioned price")
+            return redirect(url_for('browse_orders'))
         query='''INSERT into f_bid(f_id,r_id,cost_bid) VALUES({},{},{}) '''.format(id,r_id,bid_price)
         curr.execute(query)
         mysql.connection.commit()
@@ -636,6 +645,7 @@ def chatbox(id):
     login_id=session['id']
     curr=mysql.connection.cursor()
     query='''CALL get_c_f_id({})'''.format(bid_id)
+    print(query)
     curr.execute(query)
     data=curr.fetchall()
     name=''
@@ -649,17 +659,21 @@ def chatbox(id):
         data=curr.fetchall()
         name=data[0][0]
         query='''CALL delete_consumer_notification({})'''.format(bid_id)
+        print(query)
         curr.execute(query)
         mysql.connection.commit()
     else:
         query = '''SELECT firstname from consumer where idconsumer={}'''.format(data[0][1])
+        print(query)
         curr.execute(query)
         data = curr.fetchall()
         name = data[0][0]
-    query = '''CALL delete_farmer_notification({})'''.format(bid_id)
-    curr.execute(query)
+        query = '''CALL delete_farmer_notification({})'''.format(bid_id)
+        print(query)
+        curr.execute(query)
     mysql.connection.commit()
     query='''CALL get_messages({})'''.format(bid_id)
+    print(query)
     curr.execute(query)
     data=curr.fetchall()
     details=[]
@@ -679,6 +693,7 @@ def chatbox(id):
         details.append(text_details)
     order_details=[]
     query='''CALL get_order_details({})'''.format(bid_id)
+    print(query)
     curr.execute(query)
     data=curr.fetchall()
     for row in data:
@@ -903,6 +918,7 @@ def notifications():
         if session['consumer']:
             word = "Consumer"
             query='''CALL get_consumer_notifications({})'''.format(id)
+            print(query)
             curr.execute(query)
             data=curr.fetchall()
             for row in data:
@@ -913,7 +929,10 @@ def notifications():
         else:
             word = "Farmer"
             query='''CALL get_farmer_notifications({})'''.format(id)
+            curr.execute(query)
+            print(query)
             data = curr.fetchall()
+            print(data)
             for row in data:
                 val = []
                 for col in row:
